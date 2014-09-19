@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author plaul1
@@ -28,6 +30,7 @@ public class RestServer {
     HttpServer server = HttpServer.create(new InetSocketAddress(ip, port), 0);
     //REST Routes
     server.createContext("/Date", new HandlerDate());
+    server.createContext("/AllPlayerNames", new HandlerQuestion1());
     //HTTP Server Routes
     server.createContext("/pages", new HandlerFileServer());
     server.start();
@@ -48,6 +51,7 @@ public class RestServer {
     @Override
     public void handle(HttpExchange he) throws IOException {
       String response = new Date().toString();
+      
       he.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
       //he.getResponseHeaders().add("Content-Type", "appliaction/json");
       he.getResponseHeaders().add("Content-Type", "text/plain");
@@ -62,7 +66,15 @@ public class RestServer {
 
     @Override
     public void handle(HttpExchange he) throws IOException {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      
+     String response = new Gson().toJson(getPlayers());
+     System.out.println(response);
+      //he.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+      he.getResponseHeaders().add("Content-Type", "application/json");
+      he.sendResponseHeaders(200, 0);
+      try (PrintWriter pw = new PrintWriter(he.getResponseBody())) {
+        pw.print(response); //What happens if we use a println instead of print --> Explain
+      }
     }
   }
 
@@ -73,6 +85,18 @@ public class RestServer {
 
     }
   }
+  
+  private List<Player> getPlayers() {
+    List<Player> players = new ArrayList();
+    players.add(new Player(1, "James Rodríguez", "Columbia"));
+    players.add(new Player(2, "Thomas Mueller", "Germany"));
+    players.add(new Player(3, "Messi", "Argentina"));
+    players.add(new Player(4, "Neymar", "Brasil"));
+    players.add(new Player(5, "van Persie", "Holland"));
+    return players;
+  }
+  
+  
 
   class HandlerFileServer implements HttpHandler {
 
