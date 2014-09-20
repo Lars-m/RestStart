@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!--
+-->
+<html>
+  <head>
+    <title>TODO supply a title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script>
+
+      $(document).ready(function() {
+        $("#btn").click(function() {
+          $.ajax({
+            url: "../AllPlayerNames",
+            dataType: "json",
+            error: function(data, textStatus, jqXHR) {
+              var jsonResponse = JSON.parse(data.responseText);
+              alert(jsonResponse.error);
+            }
+          }).done(function(players) {
+            var rows ="";
+            players.forEach(function(p) {
+               rows += 
+                      "<tr><td>" + p.id + "</td><td>" + p.name + "</td><td>" + p.country + "</td></tr>";
+              
+            });
+            $("#rows").html(rows);
+
+          });
+
+
+
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Show Player</h1>
+    <button id="btn">Get Players</button>
+    <table>
+      <thead>
+        <tr><th>Id</th><th>Name</th><th>Country</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </body>
+</html>
